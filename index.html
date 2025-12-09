@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>전의초등학교 과학실 물품 찾기</title>
+    
+    <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+
+    <style>
+        :root {
+            /* 컬러 팔레트: 신뢰감 주는 블루 & 깔끔한 그레이 */
+            --primary: #2563EB;      /* 메인 블루 */
+            --primary-light: #EFF6FF; /* 연한 블루 배경 */
+            --text-main: #1F2937;    /* 진한 회색 텍스트 */
+            --text-sub: #6B7280;     /* 보조 텍스트 */
+            --bg-color: #F3F4F6;     /* 전체 배경색 */
+            --card-bg: #FFFFFF;      /* 카드 배경 */
+            --highlight: #FEF3C7;    /* 하이라이트 배경 (연한 노랑) */
+            --highlight-text: #D97706; /* 하이라이트 글자 (진한 노랑) */
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --radius: 16px;
+        }
+
+        body {
+            font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            margin: 0;
+            padding: 0;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .container {
+            max-width: 640px;
+            margin: 0 auto;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* 헤더 디자인 */
+        header {
+            text-align: center;
+            margin-bottom: 24px;
+            padding-top: 20px;
+        }
+
+        .brand-badge {
+            display: inline-block;
+            background-color: var(--primary-light);
+            color: var(--primary);
+            font-size: 0.75rem;
+            font-weight: 700;
+            padding: 6px 12px;
+            border-radius: 20px;
+            margin-bottom: 12px;
+            letter-spacing: 0.5px;
+        }
+
+        h1 {
+            font-size: 1.75rem;
+            font-weight: 800;
+            margin: 0;
+            color: #111827;
+            letter-spacing: -0.5px;
+        }
+
+        /* 검색창 디자인 */
+        .search-container {
+            position: sticky;
+            top: 20px;
+            z-index: 50;
+            margin-bottom: 24px;
+        }
+
+        .search-box {
+            position: relative;
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(12px);
+            border-radius: 20px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.01);
+            transition: all 0.3s ease;
+        }
+
+        .search-box:focus-within {
+            transform: translateY(-2px);
+            box-shadow: 0 20px 25px -5px rgba(37, 99, 235, 0.15), 0 8px 10px -6px rgba(37, 99, 235, 0.1);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 18px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--primary);
+            width: 20px;
+            height: 20px;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 18px 20px 18px 52px;
+            font-size: 1.05rem;
+            font-weight: 500;
+            border: 2px solid transparent;
+            border-radius: 20px;
+            outline: none;
+            background: transparent;
+            color: var(--text-main);
+            box-sizing: border-box;
+        }
+
+        input[type="text"]::placeholder {
+            color: #9CA3AF;
+        }
+
+        /* 결과 카드 리스트 */
+        .result-list {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            padding-bottom: 40px;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            padding: 24px;
+            box-shadow: var(--shadow);
+            border: 1px solid rgba(0,0,0,0.03);
+            animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            opacity: 0;
+            transform: translateY(10px);
+        }
+
+        @keyframes fadeIn {
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+            border-bottom: 1px solid #F3F4F6;
+            padding-bottom: 12px;
+        }
+
+        .location-badge {
+            background-color: var(--primary);
+            color: white;
+            padding: 6px 14px;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            box-shadow: 0 2px 4px rgba(37, 99, 235, 0.3);
+        }
+
+        .items-wrapper {
+            font-size: 1rem;
+            line-height: 1.7;
+            color: #4B5563;
+        }
+
+        .item-tag {
+            display: inline;
+        }
+
+        .highlight {
+            background-color: var(--highlight);
+            color: var(--highlight-text);
+            font-weight: 800;
+            padding: 2px 4px;
+            border-radius: 4px;
+        }
+
+        /* 이미지 스타일 */
+        .location-image-container {
+            margin-top: 16px;
+            border-radius: 12px;
+            overflow: hidden;
+            background-color: #F9FAFB;
+            border: 1px solid #E5E7EB;
+        }
+
+        .location-image {
+            width: 100%;
+            height: auto;
+            display: block;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+        
+        .location-image:hover {
+            transform: scale(1.02);
+        }
+
+        /* 빈 상태 디자인 */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-sub);
+        }
+
+        .empty-icon {
+            width: 64px;
+            height: 64px;
+            color: #D1D5DB;
+            margin-bottom: 16px;
+        }
+
+        .empty-text {
+            font-size: 1.1rem;
+            font-weight: 500;
+            margin-bottom: 8px;
+            color: #374151;
+        }
+        
+        .empty-subtext {
+            font-size: 0.9rem;
+            color: #9CA3AF;
+        }
+
+        /* 에러 메시지 */
+        .img-error {
+            padding: 12px;
+            font-size: 0.85rem;
+            color: #EF4444;
+            background: #FEF2F2;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <span class="brand-badge">JEONUI ELEMENTARY SCHOOL</span>
+        <h1>과학실 물품 찾기</h1>
+    </header>
+
+    <div class="search-container">
+        <div class="search-box">
+            <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+            <input type="text" id="searchInput" placeholder="찾으시는 물품을 입력하세요 (예: 비커, 샬레)" onkeyup="filterData()" autocomplete="off">
+        </div>
+    </div>
+
+    <div id="resultContainer" class="result-list">
+        <div class="empty-state">
+            <svg class="empty-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.384-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
+            </svg>
+            <div class="empty-text">어떤 물건을 찾으시나요?</div>
+            <div class="empty-subtext">물품 이름의 일부만 입력해도 검색됩니다.</div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // 파이썬으로 추출 및 통합된 데이터
+    const inventory = [
+        {'loc': 'A-1', 'items': '식용유, 식초'}, 
+        {'loc': 'A-2', 'items': '(안전)장갑, 내화학장갑, 레이저 보안경, 마스크, 보안경, 방진 마스크'}, 
+        {'loc': 'A-3', 'items': '식용색소, 식용색소(액상), 색모래, 먹물'}, 
+        {'loc': 'A-4', 'items': '설탕(각설탕), 소금, 녹말, 밀가루, 베이킹 파우더, 한천, 가루세제, 유리세정제'}, 
+        {'loc': 'B-1', 'items': '구멍 뚫린 아크릴통'}, 
+        {'loc': 'B-2', 'items': '보안경(고글), 목장갑, 손전등, 내열장갑, 금속판(고온용 열변색 붙임딱지), 쇠구슬'}, 
+        {'loc': 'B-3', 'items': '건전지, 레이저 포인터'}, 
+        {'loc': 'B-4', 'items': '색종이, 도화지, 빵끈, 실류, 1회용품, 호일, 핀, 압정, 클립'}, 
+        {'loc': 'C-1', 'items': '메스실린더'}, 
+        {'loc': 'C-2', 'items': '공기 주입기, 풍선, 구름발생실험 키트, 감압용기, 공기주입 용기( 기체무게측정), 기체발생장치원통, 주사기(20ml, 60ml, 마개)'}, 
+        {'loc': 'C-3', 'items': '줄자(5M, 100M), 자(플라스틱, 철), 삼각자, 테이프, 기름종이'}, 
+        {'loc': 'C-4', 'items': '다양한 실험 키트, 널판지, 도마, 마시멜로, 스파게티면'}, 
+        {'loc': 'D-2', 'items': '칼림바, 실로폰, 스폰지, 소리굽쇠, 공명상자, 금속판, 금속조각, 아크릴판, 유리판'}, 
+        {'loc': 'D-4', 'items': '칼림바, 실로폰, 스폰지, 소리굽쇠, 공명상자, 금속판, 금속조각, 아크릴판, 유리판'}, 
+        {'loc': 'E-1', 'items': '깔대기, 집기병, 사각수조'}, 
+        {'loc': 'E-2', 'items': '비커(50ml, 100ml, 200ml, 250ml, 300ml, 500ml, 1000ml), 비커솔'}, 
+        {'loc': 'F-1', 'items': '유리막대, 스포이트(유리), 핀셋'}, 
+        {'loc': 'F-2', 'items': '샬레(페트리접시), 시계접시, 증발접시'}, 
+        {'loc': 'F-3', 'items': '시험관, 시험관대, 시험관 집게, 시험관 솔'}, 
+        {'loc': 'F-4', 'items': '약수저, 스포이드(플라스틱)'}, 
+        {'loc': 'G-1', 'items': '알코올 램프, 삼발이, 쇠그물'}, 
+        {'loc': 'G-2', 'items': '점화기, 가열 장치(핫플레이트)'}, 
+        {'loc': 'G-3', 'items': '스탠드(링, 클램프, 두 갈래 집게, 뷰렛 집게 등), 도르래'}, 
+        {'loc': 'G-4', 'items': '가위, 칼, 고무마개, 킴와이프스'}, 
+        {'loc': 'H-1', 'items': '용수철 저울 (5N, 10N, 20N), 양팔저울, 대저울'}, 
+        {'loc': 'H-2', 'items': '전자 저울(0.01g, 0.1g, 1g), 분동'}, 
+        {'loc': 'H-3', 'items': '온도계(알코올, 디지털, 적외선), 습도계'}, 
+        {'loc': 'H-4', 'items': '초시계, 타이머, 멀티테스터기, 조도계, 소음측정기'}, 
+        {'loc': 'I-1', 'items': '돋보기(확대경), 루페'}, 
+        {'loc': 'I-2', 'items': '나침반, 자석(막대, 말굽, 고리, 동전), 철가루'}, 
+        {'loc': 'I-3', 'items': '전선(집게 달린 전선), 스위치(누름, 토글), 전구, 전구 소켓'}, 
+        {'loc': 'I-4', 'items': '전동기(모터), 프로펠러, 꼬마전구'}, 
+        {'loc': 'J-1', 'items': '현미경(광학), 실체 현미경'}, 
+        {'loc': 'J-2', 'items': '현미경 슬라이드 글라스, 커버 글라스'}, 
+        {'loc': 'J-3', 'items': '프레파라트(영구 표본) 세트'}, 
+        {'loc': 'J-4', 'items': '거름종이, 리트머스 종이, pH 시험지, 염화코발트 종이'}, 
+        {'loc': 'K-1', 'items': '암석 표본, 광물 표본, 화석 표본'}, 
+        {'loc': 'K-2', 'items': '지구본, 달 운동 모형, 태양계 모형'}, 
+        {'loc': 'K-3', 'items': '강낭콩, 옥수수 씨앗 등 식물 재료'}, 
+        {'loc': 'K-4', 'items': '배양토, 화분, 모종삽, 물뿌리개'}, 
+        {'loc': 'M-1', 'items': '인체 모형(전신, 골격, 근육, 장기)'}, 
+        {'loc': 'M-2', 'items': '귀, 눈, 심장 등 부분 모형'}, 
+        {'loc': 'M-3', 'items': '치아 모형, 칫솔'}, 
+        {'loc': 'M-4', 'items': '청진기, 혈압계'}, 
+        {'loc': 'O-1', 'items': '태양 전지판, 태양광 자동차 키트'}, 
+        {'loc': 'O-2', 'items': '풍력 발전 실험 세트'}, 
+        {'loc': 'O-3', 'items': '자가발전 손전등, 에너톡'}, 
+        {'loc': 'P-1', 'items': '코딩 로봇 (햄스터, 터틀 등)'}, 
+        {'loc': 'P-2', 'items': '아두이노 키트, 센서류'}, 
+        {'loc': 'P-3', 'items': '마이크로비트, 확장 보드'}, 
+        {'loc': 'P-4', 'items': '태블릿 PC, 충전 보관함'},
+        {'loc': 'Q-1', 'items': '3D 펜, 필라멘트'}, 
+        {'loc': 'Q-2', 'items': '글루건, 글루건 심'}, 
+        {'loc': 'R-1', 'items': '우드락, 폼보드, 수수깡'}, 
+        {'loc': 'R-2', 'items': 'EVA, 펠트지, 부직포'}, 
+        {'loc': 'S-1', 'items': '라벨지, 네임펜, 매직, 보드마카'}, 
+        {'loc': 'T-1', 'items': '청소 도구, 빗자루, 쓰레받기, 걸레'}
+    ];
+
+    function filterData() {
+        const inputRaw = document.getElementById('searchInput').value;
+        const input = inputRaw.trim(); 
+        const container = document.getElementById('resultContainer');
+        
+        if (input === "") {
+            container.innerHTML = `
+                <div class="empty-state">
+                    <svg class="empty-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.384-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
+                    </svg>
+                    <div class="empty-text">어떤 물건을 찾으시나요?</div>
+                    <div class="empty-subtext">물품 이름의 일부만 입력해도 검색됩니다.</div>
+                </div>`;
+            return;
+        }
+
+        container.innerHTML = ''; 
+        let matchCount = 0;
+
+        inventory.forEach(data => {
+            if (data.items.toLowerCase().includes(input.toLowerCase())) {
+                matchCount++;
+                
+                // 검색어 하이라이트
+                const regex = new RegExp(`(${input})`, 'gi');
+                const highlightedItems = data.items.replace(regex, '<span class="highlight">$1</span>');
+
+                // 위치에서 알파벳만 추출하여 이미지 파일명 생성 (예: A-1 -> a.jpg)
+                const sectionChar = data.loc.split('-')[0].toLowerCase();
+                const imageName = `${sectionChar}.jpg`;
+
+                // 카드 HTML 생성
+                const card = document.createElement('div');
+                card.className = 'card';
+                
+                card.innerHTML = `
+                    <div class="card-header">
+                        <div class="location-badge">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                            </svg>
+                            ${data.loc}
+                        </div>
+                    </div>
+                    <div class="items-wrapper">
+                        ${highlightedItems}
+                    </div>
+                    
+                    <div class="location-image-container">
+                        <img src="${imageName}" 
+                             class="location-image" 
+                             alt="${data.loc} 위치 사진"
+                             onerror="this.style.display='none'; this.parentElement.innerHTML = '<div class=\'img-error\'><svg xmlns=\'http://www.w3.org/2000/svg\' width=\'16\' height=\'16\' fill=\'none\' viewBox=\'0 0 24 24\' stroke=\'currentColor\'><path stroke-linecap=\'round\' stroke-linejoin=\'round\' stroke-width=\'2\' d=\'M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z\' /></svg> 사진 준비중 (${imageName})</div>'">
+                    </div>
+                `;
+                container.appendChild(card);
+            }
+        });
+
+        if (matchCount === 0) {
+            container.innerHTML = `
+                <div class="empty-state">
+                    <svg class="empty-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <div class="empty-text">'${input}' 검색 결과가 없습니다.</div>
+                    <div class="empty-subtext">철자가 정확한지 확인해주세요.</div>
+                </div>`;
+        }
+    }
+</script>
+
+</body>
+</html>
